@@ -93,7 +93,7 @@ namespace Warehouse_Management_System.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
             ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FirstName", stock.ClientId);
             return View(stock);
@@ -124,7 +124,7 @@ namespace Warehouse_Management_System.Controllers
             var stock = await _context.Stocks.FindAsync(id);
             _context.Stocks.Remove(stock);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Home");
         }
 
         private bool StockExists(long id)
