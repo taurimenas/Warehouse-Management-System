@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Warehouse_Management_System.DataAccess;
 using Warehouse_Management_System.Entities;
+using Warehouse_Management_System.Models;
 
 namespace Warehouse_Management_System.Controllers
 {
@@ -35,12 +36,23 @@ namespace Warehouse_Management_System.Controllers
 
             var client = await _context.Clients
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var stocks = await _context.Stocks
+                .Where(stock => stock.Client.Id == id)
+                .ToListAsync();
+
             if (client == null)
             {
                 return NotFound();
             }
 
-            return View(client);
+            var clientPage = new ClientViewModel()
+            {
+                Client = client,
+                Stocks = stocks
+            };
+
+            return View(clientPage);
         }
 
         // GET: Clients/Create

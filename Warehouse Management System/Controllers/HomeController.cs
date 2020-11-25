@@ -10,7 +10,6 @@ using Warehouse_Management_System.Models;
 using Warehouse_Management_System.DataAccess;
 using Warehouse_Management_System.Entities;
 using Microsoft.EntityFrameworkCore;
-using Warehouse_Management_System.ViewModels;
 
 namespace Warehouse_Management_System.Controllers
 {

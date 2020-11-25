@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Warehouse_Management_System.Entities;
 
-namespace Warehouse_Management_System.ViewModels
+namespace Warehouse_Management_System.Models
 {
     public class HomeViewModel
     {
