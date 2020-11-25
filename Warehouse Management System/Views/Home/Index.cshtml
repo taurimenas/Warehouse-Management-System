@@ -1,8 +1,56 @@
-﻿@{
+﻿@model IEnumerable<Warehouse_Management_System.ViewModels.HomeViewModel>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Clients list</h1>
 </div>
+
+@*<button type="button" class="btn btn-light m-1">Add client</button>*@
+
+<table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientFirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientLastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StockQuantity)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClientFirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClientLastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StockQuantity)
+
+                    <button class="btn btn-link float-right" onclick="callChangefunc(@item.Id)">Details</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function callChangefunc(value) {
+        window.location.href = "/Clients/Details/" + value;
+    }
+</script>

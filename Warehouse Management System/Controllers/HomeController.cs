@@ -2,25 +2,47 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Warehouse_Management_System.Models;
+using Warehouse_Management_System.DataAccess;
+using Warehouse_Management_System.Entities;
+using Microsoft.EntityFrameworkCore;
+using Warehouse_Management_System.ViewModels;
 
 namespace Warehouse_Management_System.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly WarehouseContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(WarehouseContext context, ILogger<HomeController> logger)
         {
+            _context = context;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var clients = await _context.Clients
+                                        .Include(client => client.Stocks)
+                                        .ToListAsync();
+
+            var homePage = new List<HomeViewModel>();
+            foreach (var client in clients)
+            {
+                homePage.Add(new HomeViewModel()
+                {
+                    Id = client.Id,
+                    ClientFirstName = client.FirstName,
+                    ClientLastName = client.LastName,
+                    StockQuantity = client.Stocks.Count
+                });
+            }
+            return View(homePage);
         }
 
         public IActionResult Privacy()
