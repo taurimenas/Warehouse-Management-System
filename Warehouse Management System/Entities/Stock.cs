@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Warehouse_Management_System.Entities
 {
@@ -11,9 +10,9 @@ namespace Warehouse_Management_System.Entities
         [MaxLength(50)]
         public string Name { get; set; }
         [Required]
-        public byte WarehouseSector { get; set; }
+        public byte WarehouseSector { get; set; } = 1;
         [Required]
-        public DateTime PlacingDate { get; set; }
+        public DateTime PlacingDate { get; set; } = DateTime.UtcNow;
 
         public Client Client { get; set; }
     }
