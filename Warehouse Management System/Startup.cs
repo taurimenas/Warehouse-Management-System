@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Warehouse_Management_System.DataAccess;
+using Serilog;
 
 namespace Warehouse_Management_System
 {
@@ -46,6 +47,8 @@ namespace Warehouse_Management_System
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 

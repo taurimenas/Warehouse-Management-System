@@ -78,13 +78,13 @@ namespace Warehouse_Management_System.Controllers
 
             var count = groups.Count();
 
-            groups.Select(st => new Stock
+            var selected = groups.Select(st => new Stock
             {
                 WarehouseSector = st.FirstOrDefault().WarehouseSector,
                 Weight = st.Sum(c => c.Weight)
             });
 
-            var filteredStocks = stocks.OrderByDescending(s => s.Weight).Take(5).ToList();
+            var filteredStocks = selected.OrderByDescending(s => s.Weight).Take(5).ToList();
 
             var sectors = new List<byte>();
             var sectorsWeights = new List<int>();

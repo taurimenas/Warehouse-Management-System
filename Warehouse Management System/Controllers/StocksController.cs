@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Warehouse_Management_System.DataAccess;
 using Warehouse_Management_System.Entities;
 
@@ -12,56 +13,29 @@ namespace Warehouse_Management_System.Controllers
 {
     public class StocksController : Controller
     {
+        private readonly ILogger<StocksController> _logger;
         private readonly WarehouseContext _context;
 
-        public StocksController(WarehouseContext context)
+        public StocksController(WarehouseContext context, ILogger<StocksController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        // GET: Stocks
-        public async Task<IActionResult> Index()
-        {
-            var warehouseContext = _context.Stocks.Include(s => s.Client);
-            return View(await warehouseContext.ToListAsync());
-        }
-
-        // GET: Stocks/Details/5
-        public async Task<IActionResult> Details(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var stock = await _context.Stocks
-                .Include(s => s.Client)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (stock == null)
-            {
-                return NotFound();
-            }
-
-            return View(stock);
-        }
-
-        // GET: Stocks/Create
         public IActionResult Create(int id)
         {
             TempData["Id"] = id;
+            _logger.LogInformation($"Creating stock for client id= {id}.");
             return View(new Stock() { ClientId = id });
         }
 
-        // POST: Stocks/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,WarehouseSector,PlacingDate")] Stock stock)
         {
             if (ModelState.IsValid)
             {
-                long.TryParse(TempData["Id"].ToString(), out long clientId);
+                _ = long.TryParse(TempData["Id"].ToString(), out long clientId);
                 stock.ClientId = clientId;
                 stock.Client = await _context.Clients
                     .FirstOrDefaultAsync(client => client.Id == stock.ClientId);
@@ -72,32 +46,32 @@ namespace Warehouse_Management_System.Controllers
             return View(stock);
         }
 
-        // GET: Stocks/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
             {
+                _logger.LogError("Stock id not found.");
                 return NotFound();
             }
 
             var stock = await _context.Stocks.FindAsync(id);
             if (stock == null)
             {
+                _logger.LogError("Stock not found.");
                 return NotFound();
             }
             ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FirstName", stock.ClientId);
             return View(stock);
         }
 
-        // POST: Stocks/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, [Bind("ClientId,Id,Name,WarehouseSector,PlacingDate")] Stock stock)
         {
             if (id != stock.Id)
             {
+                _logger.LogError("Stock id not found.");
                 return NotFound();
             }
 
@@ -112,6 +86,7 @@ namespace Warehouse_Management_System.Controllers
                 {
                     if (!StockExists(stock.Id))
                     {
+                        _logger.LogError("Stock does not exist.");
                         return NotFound();
                     }
                     else
@@ -125,7 +100,6 @@ namespace Warehouse_Management_System.Controllers
             return View(stock);
         }
 
-        // GET: Stocks/Delete/5
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
@@ -144,7 +118,6 @@ namespace Warehouse_Management_System.Controllers
             return View(stock);
         }
 
-        // POST: Stocks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)

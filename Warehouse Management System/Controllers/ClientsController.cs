@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Warehouse_Management_System.DataAccess;
 using Warehouse_Management_System.Entities;
 using Warehouse_Management_System.Models;
@@ -13,24 +11,20 @@ namespace Warehouse_Management_System.Controllers
 {
     public class ClientsController : Controller
     {
+        private readonly ILogger<ClientsController> _logger;
         private readonly WarehouseContext _context;
 
-        public ClientsController(WarehouseContext context)
+        public ClientsController(WarehouseContext context, ILogger<ClientsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        // GET: Clients
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Clients.ToListAsync());
-        }
-
-        // GET: Clients/Details/5
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
             {
+                _logger.LogError("Client id not found.");
                 return NotFound();
             }
 
@@ -43,6 +37,7 @@ namespace Warehouse_Management_System.Controllers
 
             if (client == null)
             {
+                _logger.LogError("Client not found.");
                 return NotFound();
             }
 
@@ -55,15 +50,11 @@ namespace Warehouse_Management_System.Controllers
             return View(clientPage);
         }
 
-        // GET: Clients/Create
         public IActionResult Create()
         {
             return View(new Client());
         }
 
-        // POST: Clients/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,DateOfBirth,PhoneNumber,Type")] Client client)
@@ -78,42 +69,42 @@ namespace Warehouse_Management_System.Controllers
                     if (c.FirstName == client.FirstName && c.LastName == client.LastName && c.DateOfBirth == client.DateOfBirth)
                     {
                         TempData["ErrorMessage"] = "This client already exists.";
+                        _logger.LogWarning("Client not created. This client already exists.");
                         return View(client);
                     }
                 }
 
                 _context.Add(client);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
             return View(client);
         }
 
-        // GET: Clients/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
             {
+                _logger.LogError("Client id not found.");
                 return NotFound();
             }
 
             var client = await _context.Clients.FindAsync(id);
             if (client == null)
             {
+                _logger.LogError("Client not found.");
                 return NotFound();
             }
             return View(client);
         }
 
-        // POST: Clients/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, [Bind("Id,FirstName,LastName,DateOfBirth,PhoneNumber,Type")] Client client)
         {
             if (id != client.Id)
             {
+                _logger.LogError("Client id not found.");
                 return NotFound();
             }
 
@@ -128,6 +119,7 @@ namespace Warehouse_Management_System.Controllers
                 {
                     if (!ClientExists(client.Id))
                     {
+                        _logger.LogError("Client not found.");
                         return NotFound();
                     }
                     else
@@ -135,16 +127,16 @@ namespace Warehouse_Management_System.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
             return View(client);
         }
 
-        // GET: Clients/Delete/5
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
             {
+                _logger.LogError("Client id not found.");
                 return NotFound();
             }
 
@@ -152,13 +144,13 @@ namespace Warehouse_Management_System.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (client == null)
             {
+                _logger.LogError("Client not found.");
                 return NotFound();
             }
 
             return View(client);
         }
 
-        // POST: Clients/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
@@ -166,7 +158,7 @@ namespace Warehouse_Management_System.Controllers
             var client = await _context.Clients.FindAsync(id);
             _context.Clients.Remove(client);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Home");
         }
 
         private bool ClientExists(long id)
