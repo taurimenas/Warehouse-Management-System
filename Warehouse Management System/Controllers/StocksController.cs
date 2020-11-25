@@ -44,9 +44,16 @@ namespace Warehouse_Management_System.Controllers
         }
 
         // GET: Stocks/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(long id, [Bind("Id,Name,WarehouseSector,PlacingDate")] Stock stock)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                stock.ClientId = id;
+                _context.Add(stock);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(stock);
         }
 
         // POST: Stocks/Create

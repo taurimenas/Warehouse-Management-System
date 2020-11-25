@@ -43,6 +43,7 @@
     </dl>
 </div>
 
+<button type="button" onclick="callChangefunc(@Model.Client.Id)" class="btn btn-light">Add stock</button>
 
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Client.Id">Edit</a> |
@@ -89,3 +90,8 @@
     </tbody>
 </table>
 
+<script>
+    function callChangefunc(value) {
+        window.location.href = "/Stocks/Create/" + value;
+    }
+</script>

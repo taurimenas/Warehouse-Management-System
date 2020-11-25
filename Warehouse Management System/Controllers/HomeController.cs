@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Warehouse_Management_System.Models;
 using Warehouse_Management_System.DataAccess;
 using Warehouse_Management_System.Entities;

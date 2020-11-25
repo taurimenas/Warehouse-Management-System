@@ -5,6 +5,7 @@ namespace Warehouse_Management_System.Entities
 {
     public class Stock
     {
+        public long ClientId { get; set; }
         public long Id { get; set; }
         [Required]
         [MaxLength(50)]
