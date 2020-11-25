@@ -20,6 +20,7 @@ namespace Warehouse_Management_System.Entities
         public string LastName { get; set; }
         [Required]
         [Display(Name = "Date of birth")]
+        [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; } = new DateTime(1990, 1, 1);
         [Required]
         [MaxLength(15)]

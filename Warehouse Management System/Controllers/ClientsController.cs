@@ -58,7 +58,7 @@ namespace Warehouse_Management_System.Controllers
         // GET: Clients/Create
         public IActionResult Create()
         {
-            return View();
+            return View(new Client());
         }
 
         // POST: Clients/Create
@@ -70,6 +70,18 @@ namespace Warehouse_Management_System.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                var clients = await _context.Clients.ToListAsync();
+
+                foreach (var c in clients)
+                {
+                    if (c.FirstName == client.FirstName && c.LastName == client.LastName && c.DateOfBirth == client.DateOfBirth)
+                    {
+                        TempData["ErrorMessage"] = "This client already exists.";
+                        return View(client);
+                    }
+                }
+
                 _context.Add(client);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

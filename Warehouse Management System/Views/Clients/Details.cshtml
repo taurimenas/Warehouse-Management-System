@@ -43,12 +43,8 @@
     </dl>
 </div>
 
-<button type="button" onclick="callChangefunc(@Model.Client.Id)" class="btn btn-light">Add stock</button>
-
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Client.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<a type="button" class="btn btn-light" asp-action="Create" asp-controller="Stocks" asp-route-id="@Model.Client.Id">Add stock</a>
+<a type="button" class="btn btn-light" asp-action="Edit" asp-route-id="@Model.Client.Id">Edit Client info</a>
 
 <hr />
 <h4>Client items in stock</h4>
@@ -65,13 +61,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.Stocks.FirstOrDefault().PlacingDate)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.Stocks)
         {
-            <tr>
+            <tr onclick="callChangefunc(@item.Id)">
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
@@ -81,10 +76,6 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.PlacingDate)
                 </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
             </tr>
         }
     </tbody>
@@ -92,6 +83,6 @@
 
 <script>
     function callChangefunc(value) {
-        window.location.href = "/Stocks/Create/" + value;
+        window.location.href = "/Stocks/Edit/" + value;
     }
 </script>

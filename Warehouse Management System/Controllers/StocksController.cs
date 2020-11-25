@@ -22,7 +22,8 @@ namespace Warehouse_Management_System.Controllers
         // GET: Stocks
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Stocks.ToListAsync());
+            var warehouseContext = _context.Stocks.Include(s => s.Client);
+            return View(await warehouseContext.ToListAsync());
         }
 
         // GET: Stocks/Details/5
@@ -34,6 +35,7 @@ namespace Warehouse_Management_System.Controllers
             }
 
             var stock = await _context.Stocks
+                .Include(s => s.Client)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (stock == null)
             {
@@ -44,16 +46,10 @@ namespace Warehouse_Management_System.Controllers
         }
 
         // GET: Stocks/Create
-        public async Task<IActionResult> Create(long id, [Bind("Id,Name,WarehouseSector,PlacingDate")] Stock stock)
+        public IActionResult Create(int id)
         {
-            if (ModelState.IsValid)
-            {
-                stock.ClientId = id;
-                _context.Add(stock);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(stock);
+            TempData["Id"] = id;
+            return View(new Stock() { ClientId = id });
         }
 
         // POST: Stocks/Create
@@ -61,13 +57,17 @@ namespace Warehouse_Management_System.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,WarehouseSector,PlacingDate")] Stock stock)
+        public async Task<IActionResult> Create([Bind("Name,WarehouseSector,PlacingDate")] Stock stock)
         {
             if (ModelState.IsValid)
             {
+                long.TryParse(TempData["Id"].ToString(), out long clientId);
+                stock.ClientId = clientId;
+                stock.Client = await _context.Clients
+                    .FirstOrDefaultAsync(client => client.Id == stock.ClientId);
                 _context.Add(stock);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Clients", new { id = clientId }); ;
             }
             return View(stock);
         }
@@ -85,6 +85,7 @@ namespace Warehouse_Management_System.Controllers
             {
                 return NotFound();
             }
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FirstName", stock.ClientId);
             return View(stock);
         }
 
@@ -93,7 +94,7 @@ namespace Warehouse_Management_System.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,WarehouseSector,PlacingDate")] Stock stock)
+        public async Task<IActionResult> Edit(long id, [Bind("ClientId,Id,Name,WarehouseSector,PlacingDate")] Stock stock)
         {
             if (id != stock.Id)
             {
@@ -120,6 +121,7 @@ namespace Warehouse_Management_System.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FirstName", stock.ClientId);
             return View(stock);
         }
 
@@ -132,6 +134,7 @@ namespace Warehouse_Management_System.Controllers
             }
 
             var stock = await _context.Stocks
+                .Include(s => s.Client)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (stock == null)
             {

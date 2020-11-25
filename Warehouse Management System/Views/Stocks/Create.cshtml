@@ -35,9 +35,15 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a onclick="callChangefunc(@Model.ClientId)">Back to Client</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script>
+    function callChangefunc(value) {
+        window.location.href = "/Clients/Details/" + value;
+    }
+</script>
